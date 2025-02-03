@@ -28,7 +28,7 @@ public class kafkaProducer {
             }
             if(data==null){
                 logger.severe("Error: Empty or Null response received.");
-                return;
+                throw new IllegalStateException("Empty or Null response received.");
             }
 
             String serializedData = objectMapper.writeValueAsString(data);
