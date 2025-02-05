@@ -7,8 +7,6 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import jakarta.ws.rs.core.MediaType;
 import org.jay.models.cryptoCoin;
 
-import java.util.Map;
-
 
 @RegisterRestClient(baseUri = "https://api.coingecko.com/api/v3")
 public interface CoinGeckoClient {

@@ -2,13 +2,17 @@ package org.jay.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.smallrye.reactive.messaging.kafka.IncomingKafkaRecord;
+//import io.vertx.redis.client.impl.RedisClient;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.jay.cryptoCoinMongoDb.cryptoDataStore;
 import org.jay.models.cryptoCoin;
+import io.quarkus.redis.client.RedisClient;
 
+
+import java.util.List;
 import java.util.concurrent.CompletionStage;
 
 @ApplicationScoped
@@ -18,6 +22,9 @@ public class kafkaConsumer {
 
     @Inject
     cryptoDataStore mongoTable;
+
+    @Inject
+    RedisClient redisclient;
 
     @Incoming("crypto-price-channel")
     @Transactional
@@ -38,6 +45,13 @@ public class kafkaConsumer {
 
             // Convert the cryptoCoin object to a MongoDB document and insert into MongoDB
             cryptoCoin deserializedResponse = objectMapper.readValue(value,cryptoCoin.class);
+
+            String id = deserializedResponse.getId();
+            String price = deserializedResponse.getMarketData().getCurrentPrice().get("inr").toString();
+            redisclient.set(List.of(id, price));
+            System.out.println("Stored in Redis Catch: " + id + " -> " + price);
+
+            //Storing data in MongoDB
             mongoTable.saveData(deserializedResponse);
 
             return Record.ack().thenRun(() -> {
