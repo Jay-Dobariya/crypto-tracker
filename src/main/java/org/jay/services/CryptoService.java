@@ -10,6 +10,7 @@ import org.jay.client.CoinGeckoClient;
 import org.jay.cryptoCoinMongoDb.cryptoDataStore;
 import org.jay.models.cryptoCoin;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 
@@ -27,11 +28,12 @@ public class CryptoService {
     kafkaProducer producer;
 
 
-    public String saveDataToMongoUsingKafka(String id){
+    public String saveDataToMongoUsingKafka(){
         try{
-            cryptoCoin coindata = new cryptoCoin();
-            coindata = coinGeckoClient.getCoinInfo(id);
-            producer.produceData(coindata);
+            List<cryptoCoin> coindata = coinGeckoClient.getAllCoinData("inr","market_cap_desc","100","1");
+            for(cryptoCoin coin : coindata){
+                producer.produceData(coin);
+            }
             return "Data Saved Successfully in coinData Collection.....";
         }catch (Exception e){
             LOG.severe("Code Fattaaaaa in saveDataToMongo(): " + e.getMessage());

@@ -7,6 +7,8 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import jakarta.ws.rs.core.MediaType;
 import org.jay.models.cryptoCoin;
 
+import java.util.List;
+
 
 @RegisterRestClient(baseUri = "https://api.coingecko.com/api/v3")
 public interface CoinGeckoClient {
@@ -21,10 +23,13 @@ public interface CoinGeckoClient {
     );
 
     @GET
-    @Path("/coins/{id}")
+    @Path("/coins/markets")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    cryptoCoin getCoinInfo(
-            @PathParam("id") String id
+    List<cryptoCoin> getAllCoinData(
+        @QueryParam("vs_currency") String vs_currency,
+        @QueryParam("order") String order,
+        @QueryParam("per_page") String per_page,
+        @QueryParam("page") String page
     );
 }

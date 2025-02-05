@@ -46,8 +46,9 @@ public class kafkaConsumer {
             // Convert the cryptoCoin object to a MongoDB document and insert into MongoDB
             cryptoCoin deserializedResponse = objectMapper.readValue(value,cryptoCoin.class);
 
+            //If data is already there it will update the current data o/w store new key:value pair
             String id = deserializedResponse.getId();
-            String price = deserializedResponse.getMarketData().getCurrentPrice().get("inr").toString();
+            String price = deserializedResponse.getCurrentPrice().toString();
             redisclient.set(List.of(id, price));
             System.out.println("Stored in Redis Catch: " + id + " -> " + price);
 

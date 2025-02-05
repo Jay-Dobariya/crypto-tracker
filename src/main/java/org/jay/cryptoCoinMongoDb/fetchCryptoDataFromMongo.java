@@ -11,7 +11,7 @@ import org.jay.models.cryptoCoin;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.time.ZonedDateTime;
 import java.util.logging.Logger;
 
 @ApplicationScoped
@@ -21,7 +21,6 @@ public class fetchCryptoDataFromMongo {
 
     @Inject
     MongoClient mongoClient;
-
 
     private MongoCollection<Document> getCollection() {
         try {
@@ -45,21 +44,23 @@ public class fetchCryptoDataFromMongo {
                 coin.setId(doc.getString("id"));
                 coin.setSymbol(doc.getString("symbol"));
                 coin.setName(doc.getString("name"));
-                coin.setWebSlug(doc.getString("web_slug"));
-                coin.setBlockTimeInMinutes(doc.getInteger("block_time_in_minutes", 0));
-                coin.setHashingAlgorithm(doc.getString("hashing_algorithm"));
-                coin.setCategories(doc.getList("categories", String.class));
-                coin.setLocalization(doc.get("localization", Map.class));
-                coin.setImage(doc.get("image", Map.class));
-
-                // Handling MarketData
-                Document marketDataDoc = doc.get("market_data", Document.class);
-                if (marketDataDoc != null) {
-                    cryptoCoin.MarketData marketData = new cryptoCoin.MarketData();
-                    marketData.setCurrentPrice(marketDataDoc.get("current_price", Map.class));
-                    coin.setMarketData(marketData);
-                }
-
+                coin.setImage(doc.getString("image"));
+                coin.setCurrentPrice(doc.getDouble("current_price"));
+                coin.setMarketCap(doc.getLong("market_cap"));
+                coin.setMarketCapRank(doc.getInteger("market_cap_rank"));
+                coin.setTotalVolume(doc.getLong("total_volume"));
+                coin.setHigh24h(doc.getDouble("high_24h"));
+                coin.setLow24h(doc.getDouble("low_24h"));
+                coin.setPriceChangePercentage24h(doc.getDouble("price_change_percentage_24h"));
+                coin.setMarketCapChangePercentage24h(doc.getDouble("market_cap_change_percentage_24h"));
+                coin.setTotalSupply(doc.getDouble("total_supply"));
+                coin.setCirculatingSupply(doc.getDouble("circulating_supply"));
+                coin.setAth(doc.getDouble("ath"));
+                coin.setAthChangePercentage(doc.getDouble("ath_schange_percentage"));
+                coin.setAthDate(doc.getString("ath_date"));
+                coin.setAtl(doc.getDouble("atl"));
+                coin.setAtlChangePercentage(doc.getDouble("atl_change_percentage"));
+                coin.setAtlDate(doc.getString("atl_date"));
                 cryptoCoins.add(coin);
             });
 

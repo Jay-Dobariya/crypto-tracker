@@ -8,9 +8,8 @@ import jakarta.inject.Inject;
 import org.jay.models.cryptoCoin;
 import org.jay.services.CryptoService;
 import org.jay.services.cryptoGetAllData;
-import org.jay.services.priceService;
+
 import java.util.List;
-import java.util.Map;
 
 @Path("/crypto")
 public class cryptoController {
@@ -19,26 +18,21 @@ public class cryptoController {
         CryptoService cryptoData;
 
         @Inject
-        priceService priceService;
-
-        @Inject
         cryptoGetAllData cryptogetalldata;
 
-        @GET
-        @Path("/saveCryptoCoinData/{id}")
-        @Consumes(MediaType.APPLICATION_JSON)
-        @Produces(MediaType.APPLICATION_JSON)
-        public Response saveCryptoInfo(@PathParam("id") String id){
-            return Response.ok(Map.of("Message",cryptoData.saveDataToMongoUsingKafka(id))).build();
-        }
 
         @GET
-        @Path("/timeseries/price")
+        @Path("/fetchCryptoDataFromAPI")
         @Consumes(MediaType.APPLICATION_JSON)
         @Produces(MediaType.APPLICATION_JSON)
-        public Response fetchTimeSeriesData(@QueryParam("ids") String ids){
-                String vs_currency = "inr";
-                return Response.ok(Map.of("Message",priceService.getCoinsPrices(ids,"inr"))).build();
+        public Response fetchCryptoData(){
+            //Store in DB
+            try {
+                String response = cryptoData.saveDataToMongoUsingKafka();
+                return Response.ok("Data Saved Successfully....").build();
+            } catch (Exception e) {
+                return Response.ok("Error: " + e.getMessage()).build();
+            }
         }
 
 
