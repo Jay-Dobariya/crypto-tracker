@@ -10,6 +10,7 @@ import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.jay.cryptoCoinMongoDb.cryptoDataStore;
 import org.jay.models.cryptoCoin;
 import io.quarkus.redis.client.RedisClient;
+import org.jay.openSearch.openSearchService;
 
 
 import java.util.List;
@@ -25,6 +26,9 @@ public class kafkaConsumer {
 
     @Inject
     RedisClient redisclient;
+
+    @Inject
+    openSearchService openSearchService;
 
     @Incoming("crypto-price-channel")
     @Transactional
@@ -43,8 +47,10 @@ public class kafkaConsumer {
                 throw new IllegalStateException("Empty or Null response received.");
             }
 
+
             // Convert the cryptoCoin object to a MongoDB document and insert into MongoDB
             cryptoCoin deserializedResponse = objectMapper.readValue(value,cryptoCoin.class);
+            openSearchService.createIndex(deserializedResponse);
 
             //If data is already there it will update the current data o/w store new key:value pair
             String id = deserializedResponse.getId();

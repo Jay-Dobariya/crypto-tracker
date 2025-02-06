@@ -2,6 +2,7 @@ package org.jay.services;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkus.scheduler.Scheduled;
 import jakarta.ws.rs.core.Response;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -11,6 +12,7 @@ import org.jay.cryptoCoinMongoDb.cryptoDataStore;
 import org.jay.models.cryptoCoin;
 
 import java.util.List;
+import java.util.concurrent.CompletionStage;
 import java.util.logging.Logger;
 
 
@@ -28,16 +30,16 @@ public class CryptoService {
     kafkaProducer producer;
 
 
-    public String saveDataToMongoUsingKafka(){
+//    @Scheduled(every = "1m")
+    public void saveDataToMongoUsingKafka(){
         try{
             List<cryptoCoin> coindata = coinGeckoClient.getAllCoinData("inr","market_cap_desc","100","1");
             for(cryptoCoin coin : coindata){
                 producer.produceData(coin);
             }
-            return "Data Saved Successfully in coinData Collection.....";
+            LOG.info("Data Saved Successfully in coinData Collection.....");
         }catch (Exception e){
-            LOG.severe("Code Fattaaaaa in saveDataToMongo(): " + e.getMessage());
-            return "Error: " + e.getMessage();
+            LOG.severe("Code Fattaaaaa in saveDataToMongoUsingKafka(): " + e.getMessage());
         }
     }
 

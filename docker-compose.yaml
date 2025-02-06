@@ -42,13 +42,15 @@ services:
     container_name: opensearch
     restart: always
     environment:
-      discovery.type: single-node
-      OPENSEARCH_INITIAL_ADMIN_PASSWORD: admin
+      - DISABLE_SECURITY_PLUGIN=true
+      - discovery.type=single-node
     ports:
       - "9200:9200"
       - "9600:9600"
     volumes:
       - opensearch_data:/usr/share/opensearch/data
+    networks:
+      - crypto-network
 
   # Zookeeper (Required for Kafka)
   zookeeper:
